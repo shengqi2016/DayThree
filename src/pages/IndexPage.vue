@@ -21,30 +21,15 @@
     </q-form>
   </q-page>
 </template>
-
-
 <script setup>
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAsA57gTRgBUoF2qvHPKC3CKmNjgIsDcw0",
-  authDomain: "bmi-program.firebaseapp.com",
-  projectId: "bmi-program",
-  storageBucket: "bmi-program.appspot.com",
-  messagingSenderId: "316951727213",
-  appId: "1:316951727213:web:b884d0605b6f1ac4624364",
-  measurementId: "G-JJF5XKLC2K"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+import {auth,signInWithEmailAndPassword} from 'src/router/firebase.js'
 const password=ref("");
 const email=ref("");
 const $q = useQuasar();
-
-
+const router = useRouter();
 
 async function onLogin() {
   console.log("Login attempt with email:", email.value); // Log the login attempt
@@ -53,6 +38,8 @@ async function onLogin() {
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
     const user = userCredential.user;
     console.log("Login successful:", user); // Log successful login
+    localStorage.setItem('isAuthenticated', 'true'); // 保存认证状态
+    router.push({ path: '/Infp' }); // 登录成功后跳转到 Infp 页面
     $q.loading.hide();
     $q.notify({
       icon: "done",

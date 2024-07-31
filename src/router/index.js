@@ -26,5 +26,14 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  Router.beforeEach((to, from, next) => {
+    const isAuthenticated = localStorage.getItem('isAuthenticated')==='true';
+    if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+      next({ path: '/' }); // 如果未认证且目标路由需要认证，跳转到根路径
+    } else {
+      next(); // 否则，允许导航
+    }
+  });
+
   return Router
 })
