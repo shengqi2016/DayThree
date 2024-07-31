@@ -1,13 +1,11 @@
 {
   "name": "daythree",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Daythree",
+  "description": "Qi fitness record equipement",
+  "productName": "DayThree",
   "author": "Qi Sheng",
   "private": true,
   "scripts": {
-    "lint": "eslint --ext .js,.vue ./",
-    "format": "prettier --write \"**/*.{js,vue,css,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build"
@@ -15,19 +13,12 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "core-js": "^3.31.1",
-    "firebase": "^10.12.4",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.13.14",
-    "@quasar/app-webpack": "^3.13.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-vue": "^9.0.0",
-    "eslint-webpack-plugin": "^3.1.1",
-    "prettier": "^3.3.3"
+    "@quasar/app-webpack": "^3.13.0"
   },
   "browserslist": [
     "last 10 Chrome versions",
