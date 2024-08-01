@@ -35,17 +35,24 @@
           row-key="id"
         />
       </q-card-section>
+      <q-separator />
+      <q-card-section class="q-pa-md flex flex-center">
+        <q-btn color="amber" label="Add New Record" @click="addnewrecord" />
+      </q-card-section>
+
 
   </q-page>
+
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { db } from 'src/router/firebase.js';
 import { collection, getDocs } from 'firebase/firestore';
-
+import { useRouter } from 'vue-router';
 // Pull Workouts
 const pullRows = ref([]);
+const router = useRouter();
 const pullColumns = [
   { name: 'date', required: true, label: 'Date', align: 'left', field: 'date', sortable: true },
   { name: 'seatedRowsTimes', align: 'center', label: 'Seated Rows Times', field: 'seatedRowsTimes', sortable: true },
@@ -129,6 +136,11 @@ const fetchSquatData = async () => {
   }
 };
 
+function addnewrecord(){
+  router.push({ path: '/nrp' });
+
+
+}
 onMounted(() => {
   fetchPullData();
   fetchPushData();
