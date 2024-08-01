@@ -4,8 +4,8 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'Infp', component: () => import('pages/InformationPage.vue'), meta: { requiresAuth: true } }
-    ]
+      { path: 'Infp', component: () => import('pages/InformationPage.vue'), meta: { requiresAuth: true } },
+      { path: 'nrp', component: () => import('pages/NewRecordPage.vue')} ,]
   },
 
   // Always leave this as last one,

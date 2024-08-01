@@ -8,7 +8,6 @@
         filled
         class="q-mb-md"
       />
-
       <q-input
         v-model="password"
         label="Password"
@@ -16,7 +15,6 @@
         filled
         class="q-mb-md"
       />
-
       <q-btn type="submit" label="Login" color="primary" />
     </q-form>
   </q-page>

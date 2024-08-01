@@ -8,17 +8,21 @@
   "scripts": {
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "quasar": "quasar"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "core-js": "^3.37.1",
+    "daythree": "file:",
+    "firebase": "^10.12.4",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "@quasar/app-webpack": "^3.13.0"
+    "@quasar/app-webpack": "^3.13.0",
+    "@quasar/cli": "^2.4.1"
   },
   "browserslist": [
     "last 10 Chrome versions",

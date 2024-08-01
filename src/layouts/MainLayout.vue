@@ -11,11 +11,11 @@
           @click="toggleLeftDrawer"
         /> -->
 
-        <q-toolbar-title>
-          DAY THREE
+        <q-toolbar-title @click="Home" style="user-select: none">
+          Day Three
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div >Time:  {{ currentTime }}</div>
       </q-toolbar>
     </q-header>
 
@@ -46,8 +46,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import EssentialLink from 'components/EssentialLink.vue'
+const router = useRouter();
+const currentTime = ref(new Date().toLocaleTimeString());
+
+const updateTime = () => {
+  currentTime.value = new Date().toLocaleTimeString();
+};
+
+onMounted(() => {
+  const interval = setInterval(updateTime, 1000); // 每秒更新一次时间
+  onUnmounted(() => {
+    clearInterval(interval); // 清除定时器
+  });
+});
+
+function Home() {
+  router.push({ path: '/' });
+}
 
 defineOptions({
   name: 'MainLayout'

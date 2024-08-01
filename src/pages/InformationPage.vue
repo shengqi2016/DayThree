@@ -7,17 +7,19 @@
       flat
       bordered
     />
+    <div class="q-pa-md q-gutter-sm" style="text-align: right;">
+  <q-btn color="amber" label="Add New Record" @click="addnewrecord" />
+</div>
 </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useQuasar } from "quasar";
+import { useRouter } from 'vue-router';
 import { db } from 'src/router/firebase.js';
 import { doc,collection, getDoc} from 'firebase/firestore';
 
-const documentData = ref({});
 const rows = ref([]);
+const router = useRouter();
 const columns = [
   {
     name: 'date',
@@ -52,6 +54,10 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData();
 });
+
+function addnewrecord(){
+  router.push({ path: '/nrp' });
+}
 
 
 
