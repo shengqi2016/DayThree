@@ -20,7 +20,7 @@
   </q-page>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
 import {auth,signInWithEmailAndPassword} from 'src/router/firebase.js'
@@ -55,4 +55,6 @@ async function onLogin() {
     });
   }
 }
+
+
 </script>

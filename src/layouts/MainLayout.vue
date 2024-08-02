@@ -14,9 +14,14 @@
         <q-toolbar-title @click="Home" style="user-select: none">
           Day Three
         </q-toolbar-title>
+        <div>
+        <q-btn color="teal" @click="logout">
+            <div>LOG OUT</div>
+          </q-btn>
+          </div>
 
-        <div >Time:  {{ currentTime }}</div>
       </q-toolbar>
+      <div>Time: {{ currentTime }}</div>
     </q-header>
 
     <!-- <q-drawer
@@ -66,7 +71,10 @@ onMounted(() => {
 function Home() {
   router.push({ path: '/' });
 }
-
+function logout(){
+  localStorage.setItem('isAuthenticated', 'false'); // 退出
+  router.push({ path: '/' });
+}
 defineOptions({
   name: 'MainLayout'
 })

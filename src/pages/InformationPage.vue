@@ -123,6 +123,7 @@ const squatColumns = [
   { name: 'wallSitTimes', align: 'center', label: 'Wall Sit Times', field: 'wallSitTimes', sortable: true }
 ];
 
+
 const fetchSquatData = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'squatWorkouts'));
