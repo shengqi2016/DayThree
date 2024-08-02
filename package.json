@@ -16,6 +16,7 @@
     "core-js": "^3.37.1",
     "daythree": "file:",
     "firebase": "^10.12.4",
+    "firebase-tools": "^13.15.0",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
