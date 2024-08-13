@@ -2,47 +2,17 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <!-- <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        /> -->
-
         <q-toolbar-title @click="Home" style="user-select: none">
           Day Three
         </q-toolbar-title>
-        <div>
-        <q-btn color="teal" @click="logout">
+        <div v-if="isAuthenticated"> <!-- 仅在用户登录时显示 -->
+          <q-btn color="teal" @click="logout">
             <div>LOG OUT</div>
           </q-btn>
-          </div>
-
+        </div>
       </q-toolbar>
       <div>Time: {{ currentTime }}</div>
     </q-header>
-
-    <!-- <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer> -->
 
     <q-page-container>
       <router-view />
@@ -51,11 +21,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+
 const router = useRouter();
 const currentTime = ref(new Date().toLocaleTimeString());
+const isAuthenticated = ref(false); // 用于跟踪用户是否登录
 
 const updateTime = () => {
   currentTime.value = new Date().toLocaleTimeString();
@@ -66,67 +37,22 @@ onMounted(() => {
   onUnmounted(() => {
     clearInterval(interval); // 清除定时器
   });
+
+  // 检查用户是否已登录
+  isAuthenticated.value = localStorage.getItem("isAuthenticated") === "true";
 });
 
 function Home() {
-  router.push({ path: '/' });
+  router.push({ path: "/" });
 }
-function logout(){
-  localStorage.setItem('isAuthenticated', 'false'); // 退出
-  router.push({ path: '/' });
+
+function logout() {
+  localStorage.setItem("isAuthenticated", "false"); // 退出
+  isAuthenticated.value = false; // 更新登录状态
+  router.push({ path: "/" });
 }
+
 defineOptions({
-  name: 'MainLayout'
-})
-
-// const linksList = [
-//   {
-//     title: 'Docs',
-//     caption: 'quasar.dev',
-//     icon: 'school',
-//     link: 'https://quasar.dev'
-//   },
-//   {
-//     title: 'Github',
-//     caption: 'github.com/quasarframework',
-//     icon: 'code',
-//     link: 'https://github.com/quasarframework'
-//   },
-//   {
-//     title: 'Discord Chat Channel',
-//     caption: 'chat.quasar.dev',
-//     icon: 'chat',
-//     link: 'https://chat.quasar.dev'
-//   },
-//   {
-//     title: 'Forum',
-//     caption: 'forum.quasar.dev',
-//     icon: 'record_voice_over',
-//     link: 'https://forum.quasar.dev'
-//   },
-//   {
-//     title: 'Twitter',
-//     caption: '@quasarframework',
-//     icon: 'rss_feed',
-//     link: 'https://twitter.quasar.dev'
-//   },
-//   {
-//     title: 'Facebook',
-//     caption: '@QuasarFramework',
-//     icon: 'public',
-//     link: 'https://facebook.quasar.dev'
-//   },
-//   {
-//     title: 'Quasar Awesome',
-//     caption: 'Community Quasar projects',
-//     icon: 'favorite',
-//     link: 'https://awesome.quasar.dev'
-//   }
-// ]
-
-// const leftDrawerOpen = ref(false)
-
-// function toggleLeftDrawer () {
-//   leftDrawerOpen.value = !leftDrawerOpen.value
-// }
+  name: "MainLayout",
+});
 </script>
