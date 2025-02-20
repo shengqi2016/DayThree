@@ -18,9 +18,11 @@
       <q-btn type="submit" label="Login" color="primary" />
     </q-form>
   </q-page>
+
 </template>
+
 <script setup>
-import { ref, watch } from "vue";
+import {watch, computed, ref } from "vue";
 import { useRouter } from 'vue-router';
 import { useQuasar } from "quasar";
 import {auth,signInWithEmailAndPassword} from 'src/router/firebase.js'
@@ -28,7 +30,6 @@ const password=ref("");
 const email=ref("");
 const $q = useQuasar();
 const router = useRouter();
-
 async function onLogin() {
   console.log("Login attempt with email:", email.value); // Log the login attempt
   $q.loading.show();
@@ -55,6 +56,5 @@ async function onLogin() {
     });
   }
 }
-
 
 </script>
