@@ -14,6 +14,11 @@ const routes = [
         component: () => import("pages/NewRecordPage.vue"),
         meta: { requiresAuth: true },
       },
+      {
+        path: "hworkp",
+        component: () => import("pages/HouseWorksPage.vue"),
+        meta: { requiresAuth: true },
+      },
     ],
   },
 
