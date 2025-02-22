@@ -1,19 +1,22 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="flex justify-center">
     <!-- 显示今天的家务任务 -->
-    <q-card class="q-pa-md" v-if="todayTask">
-      <q-card-section>
-        <div class="text-h6">今天的家务任务：</div>
-        <div class="text-h5 q-mt-md">{{ todayTask.task }}</div>
-        <div class="text-subtitle2">任务日期: {{ todayTask.date }}</div>
-      </q-card-section>
-    </q-card>
+    <div class="column items-center q-pa-md">
+      <q-card class="q-mt-md">
+        <q-card-section>
+          <div class="text-h6">今天的家务任务</div>
+        </q-card-section>
 
-    <q-card v-else class="q-pa-md">
-      <q-card-section>
-        <div class="text-h6">今天没有家务任务！</div>
-      </q-card-section>
-    </q-card>
+        <q-card-section v-if="todayTask">
+          <div class="text-subtitle2">任务于: {{ todayTask.date }} !</div>
+          <div class="text-h5 text-center">{{ todayTask.task }}</div>
+
+        </q-card-section>
+
+        <q-card-section v-else>
+          <div class="text-center text-grey">今天没有家务任务</div>
+        </q-card-section>
+      </q-card>
 
     <!-- 添加新家务任务 -->
     <q-card class="q-pa-md q-mt-md">
@@ -29,57 +32,75 @@
         </q-form>
       </q-card-section>
     </q-card>
+  </div>
   </q-page>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { db, collection, addDoc, getDocs, query, where } from "firebase/firestore"; // 导入 Firebase 配置
-
+import { db } from 'src/router/firebase.js';
+import { collection, getDocs,getDoc, deleteDoc, doc,addDoc,setDoc, updateDoc,arrayUnion,arrayRemove} from 'firebase/firestore';
+import { useQuasar } from 'quasar';
+const $q = useQuasar();
 const newTask = ref("");
 const selectedDate = ref("");
 const todayTask = ref(null);
-
-const fetchRandomTask = async () => {
+const showDailyChore = async () => {
   try {
-    const today = new Date().toISOString().split("T")[0]; // 获取今天的日期
-    const tasksCollection = collection(db, "chores");
-    const q = query(tasksCollection, where("date", "==", today)); // 过滤出今天的任务
-    const querySnapshot = await getDocs(q);
-    const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const docRef = doc(db, "chores", "dailychore"); // ✅ 访问 `chores` 集合下的 `dailychore` 文档
+    const docSnap = await getDoc(docRef); // ✅ 使用 `getDoc()` 获取文档数据
 
-    if (tasks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * tasks.length);
-      todayTask.value = tasks[randomIndex];
+    if (docSnap.exists()) {
+      console.log("文档 dailychore 存在！");
+      todayTask.value = docSnap.data();
+    } else {
+      console.log("文档 dailychore 不存在！");
+      todayTask.value = null;
     }
   } catch (error) {
     console.error("获取任务失败", error);
   }
 };
-
+// 页面加载时获取一个随机任务
+showDailyChore();
 const submitTask = async () => {
   if (!newTask.value || !selectedDate.value) {
     alert("请填写任务内容和日期");
     return;
   }
 
-  try {
-    const tasksCollection = collection(db, "chores");
-    await addDoc(tasksCollection, {
-      task: newTask.value,
-      date: selectedDate.value
+  try{
+    const taskRef = doc(db, "chores", "Unfinishedchroes");
+    // await setDoc(taskRef, { taskList: [] });
+    await updateDoc(taskRef, {
+      taskList: arrayUnion({
+        task: newTask.value,
+        date: selectedDate.value,
+      }),
     });
-
-    newTask.value = "";
-    selectedDate.value = "";
-    fetchRandomTask(); // 重新加载今天的任务
-    alert("任务已添加！");
+    $q.notify({
+      color: 'positive',
+      position: 'top',
+      message: newTask.value+'->  Added successfully!',
+    });
   } catch (error) {
-    console.error("添加任务失败", error);
+    console.error("Error adding document: ", error);
+    $q.notify({
+      color: 'negative',
+      position: 'top',
+      message: `Error: ${error.message}`,
+    });
   }
-};
 
-onMounted(() => {
-  fetchRandomTask();
-});
+
+};
+  // 清空输入框
+  newTask.vasue = "";
+  selectedDate.value = "";
+
+
+
+// onMounted(() => {
+//   showDailyChore();
+// });
 </script>
