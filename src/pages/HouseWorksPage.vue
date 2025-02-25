@@ -1,22 +1,29 @@
 <template>
   <q-page class="flex justify-center">
     <!-- 显示今天的家务任务 -->
-    <div class="column items-center q-pa-md">
-      <q-card class="q-mt-md">
+    <div class="flex flex-center q-pa-md">
+      <div class="row q-gutter-md">
+
+      <q-card>
         <q-card-section>
           <div class="text-h6">今天的家务任务</div>
         </q-card-section>
+        <q-card-actions class="justify-center">
+          <q-btn color="primary" label="完成任务" @click="completeTask" />
+        </q-card-actions>
 
         <q-card-section v-if="todayTask">
           <div class="text-subtitle2">任务于: {{ todayTask.date }} !</div>
           <div class="text-h5 text-center">{{ todayTask.task }}</div>
-
         </q-card-section>
+
 
         <q-card-section v-else>
           <div class="text-center text-grey">今天没有家务任务</div>
         </q-card-section>
       </q-card>
+
+
 
     <!-- 添加新家务任务 -->
     <q-card class="q-pa-md q-mt-md">
@@ -32,6 +39,8 @@
         </q-form>
       </q-card-section>
     </q-card>
+
+
     <!-- 未完成任务列表 -->
     <q-card class="q-pa-md q-mt-md">
   <q-card-section>
@@ -48,13 +57,13 @@
       </q-item>
     </q-list>
   </q-card-section>
-
   <q-card-section v-else>
     <div class="text-center text-grey">没有未完成的任务</div>
   </q-card-section>
 </q-card>
-  </div>
-  </q-page>
+</div>
+</div>
+</q-page>
 </template>
 
 <script setup>
@@ -67,28 +76,73 @@ const newTask = ref("");
 const selectedDate = ref("");
 const todayTask = ref(null);
 const tasks = ref([]);
-// 获取今天的家务任务
-const showDailyChore = async () => {
+// 完成任务
+const completeTask=async ()=>{
   try {
-    const docRef = doc(db, "chores", "dailychore"); // ✅ 访问 `chores` 集合下的 `dailychore` 文档
-    const docSnap = await getDoc(docRef); // ✅ 使用 `getDoc()` 获取文档数据
-
-    if (docSnap.exists()) {
-      todayTask.value = docSnap.data();
-    } else {
-      console.log("文档 dailychore 不存在！");
-      todayTask.value = null;
-    }
+    const taskRef = doc(db, "chores", "unfinishedchores");
+    await updateDoc(taskRef, {
+      taskList: arrayRemove({
+        task: todayTask.value.task,
+        date: todayTask.value.date,
+      }),
+    });
+    const dailyChoreRef = doc(db, "chores", "dailychore");
+    await deleteDoc(dailyChoreRef);
+    pickDailyChore();
+    $q.notify({
+      color: 'positive',
+      position: 'top',
+      message: todayTask.value.task+'->  Completed successfully!',
+    });
+    todayTask.value = null;
+    window.location.reload();
   } catch (error) {
-    console.error("获取任务失败", error);
+    console.error("Error adding document: ", error);
+    $q.notify({
+      color: 'negative',
+      position: 'top',
+      message: `没有任务喽 你要添加新的任务`,
+    });
   }
-};
-// 页面加载时获取一个随机任务
+}
 
 onMounted(() => {
-  getTasks();
-  showDailyChore();
+  pickDailyChore();
+  getFullTasks();
 });
+
+// 选取并存储今日任务
+const pickDailyChore = async () => {
+  try {
+    const dailyChoreRef = doc(db, "chores", "dailychore");
+    const dailyChoreSnap = await getDoc(dailyChoreRef);
+    if (dailyChoreSnap.exists()) {
+    todayTask.value = dailyChoreSnap.data();
+    return;
+    }
+    const taskRef = doc(db, "chores", "unfinishedchores");
+    const docSnap = await getDoc(taskRef);
+    if (!docSnap.exists()) {
+      return;
+    }
+    const data = docSnap.data();
+
+    const tasks = Array.isArray(data.taskList) ? data.taskList : [];
+    console.log("tasks", tasks);
+    if (tasks.length === 0) {
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * tasks.length);
+    const randomTask = tasks[randomIndex];
+    console.log("随机任务:", randomTask);
+    await setDoc(dailyChoreRef, randomTask);
+    todayTask.value = randomTask;
+  } catch (error) {
+    console.error("获取或存储任务失败:", error);
+  }
+
+};
+
 
 
 // 提交任务
@@ -97,10 +151,8 @@ const submitTask = async () => {
     alert("请填写任务内容和日期");
     return;
   }
-
   try{
     const taskRef = doc(db, "chores", "unfinishedchores");
-    // await setDoc(taskRef, { taskList: [] });
     await updateDoc(taskRef, {
       taskList: arrayUnion({
         task: newTask.value,
@@ -114,6 +166,7 @@ const submitTask = async () => {
     });
     newTask.value = "";
     selectedDate.value = "";
+    window.location.reload();
   } catch (error) {
     console.error("Error adding document: ", error);
     $q.notify({
@@ -123,9 +176,8 @@ const submitTask = async () => {
     });
   }
 };
-
 // 获取未完成任务列表
-  const getTasks = async () => {
+const getFullTasks = async () => {
   try {
     const taskRef = doc(db, "chores", "unfinishedchores"); // ✅ 获取文档引用
     const docSnap = await getDoc(taskRef); // ✅ 获取文档数据
@@ -142,13 +194,5 @@ const submitTask = async () => {
     console.error("获取任务失败", error);
   }
 };
-
-
-  // 清空输入框
-  newTask.vasue = "";
-  selectedDate.value = "";
-
-
-
 
 </script>
