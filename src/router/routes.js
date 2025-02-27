@@ -19,6 +19,11 @@ const routes = [
         component: () => import("pages/HouseWorksPage.vue"),
         meta: { requiresAuth: true },
       },
+      {
+        path: "purpop",
+        component: () => import("pages/PurposePage.vue"),
+        meta: { requiresAuth: true },
+      },
     ],
   },
 

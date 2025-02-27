@@ -67,10 +67,18 @@
           <q-item-section>Info Page</q-item-section>
         </q-item>
 
+        <q-item clickable v-ripple to="/purpop" @click="drawer = false">
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
+          <q-item-section>Purpose</q-item-section>
+        </q-item>
+
 
     <q-item clickable v-ripple to="/hworkp" @click="drawer = false">
           <q-item-section avatar>
-            <q-icon name="thumb_up" />
+            <!-- <q-icon name="thumb_up" /> -->
+            <q-icon name="info" />
           </q-item-section>
           <q-item-section>Housework</q-item-section>
         </q-item>
