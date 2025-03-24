@@ -42,7 +42,6 @@
 
     <!-- 侧边栏 Drawer -->
     <q-drawer v-model="drawer" show-if-above side="left" bordered>
-
       <q-list>
         <q-item>
           <q-item-section avatar>
@@ -53,20 +52,18 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple to="/" @click="drawer = false">
+        <q-item to="/" exact clickable v-ripple>
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
-          <q-item-section>Home</q-item-section>
+          <q-item-section>首页</q-item-section>
         </q-item>
-
-        <q-item clickable v-ripple to="/Infp" @click="drawer = false">
+        <q-item to="/expense" exact clickable v-ripple>
           <q-item-section avatar>
-            <q-icon name="info" />
+            <q-icon name="receipt" />
           </q-item-section>
-          <q-item-section>Info Page</q-item-section>
+          <q-item-section>记账</q-item-section>
         </q-item>
-
         <q-item clickable v-ripple to="/purpop" @click="drawer = false">
           <q-item-section avatar>
             <q-icon name="info" />
@@ -74,13 +71,25 @@
           <q-item-section>Purpose</q-item-section>
         </q-item>
 
+        <q-item clickable v-ripple to="/sellp" @click="drawer = false">
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
+          <q-item-section>Selling List</q-item-section>
+        </q-item>
 
-    <q-item clickable v-ripple to="/hworkp" @click="drawer = false">
+        <q-item clickable v-ripple to="/hworkp" @click="drawer = false">
           <q-item-section avatar>
             <!-- <q-icon name="thumb_up" /> -->
             <q-icon name="info" />
           </q-item-section>
           <q-item-section>Housework</q-item-section>
+        </q-item>
+        <q-item clickable v-ripple to="/findcal" @click="drawer = false">
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
+          <q-item-section>CheckCal</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
@@ -113,9 +122,11 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
-import { auth, signInWithEmailAndPassword } from "src/router/firebase.js";
+import { auth } from '../router/firebase'
+import { signInWithEmailAndPassword } from '../router/firebase'
 
 const router = useRouter();
+const uid=ref("");
 const $q = useQuasar();
 const drawer = ref(false);
 const currentTime = ref(new Date().toLocaleTimeString());
@@ -158,12 +169,15 @@ async function handleLogin() {
       email.value,
       password.value
     );
-    const user = userCredential.user;
-    console.log("Login successful:", user);
 
     // ✅ 存入 localStorage 并更新 Vue 响应式变量
     localStorage.setItem("isAuthenticated", "true");
     isAuthenticated.value = true;
+
+    const userid = userCredential.user.uid;
+    console.log("Login successful with UID: ", userid);
+    localStorage.setItem("UID",userid);
+
 
     // ✅ 关闭登录框，跳转页面
     showLogin.value = false;
@@ -194,5 +208,13 @@ const handleLogout = () => {
   email.value = ""; // ✅ 清空 email
   password.value = ""; // ✅ 清空密码
   router.push("/"); // 🔄 跳转回首页
+  $q.notify({
+      icon: "done",
+      position: "center",
+      color: "negative",
+      message: `Log Out Successfully!!!`,
+    });
+    localStorage.setItem("UID",null);
 };
+
 </script>

@@ -31,7 +31,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "src/router/firebase.js";
+import { db } from '../router/firebase'
 
 const todayTask = ref(null);
 const currentDate = ref(""); // 存储当前日期

@@ -5,16 +5,6 @@ const routes = [
     children: [
       { path: "", component: () => import("pages/IndexPage.vue") },
       {
-        path: "Infp",
-        component: () => import("pages/InformationPage.vue"),
-        meta: { requiresAuth: true },
-      },
-      {
-        path: "nrp",
-        component: () => import("pages/NewRecordPage.vue"),
-        meta: { requiresAuth: true },
-      },
-      {
         path: "hworkp",
         component: () => import("pages/HouseWorksPage.vue"),
         meta: { requiresAuth: true },
@@ -24,6 +14,16 @@ const routes = [
         component: () => import("pages/PurposePage.vue"),
         meta: { requiresAuth: true },
       },
+      {
+        path: "findcal",
+        component: () => import("pages/FindCalPage.vue"),
+      },
+      {
+        path: "sellp",
+        component: () => import("pages/SellingListPage.vue"),
+        meta: { requiresAuth: true },
+      },
+      { path: 'expense', component: () => import('pages/ExpensePage.vue') }
     ],
   },
 

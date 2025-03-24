@@ -136,137 +136,124 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { db } from "src/router/firebase.js";
-import {
-  collection,
-  getDocs,
-  getDoc,
-  deleteDoc,
-  doc,
-  addDoc,
-  setDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
 import { useQuasar } from "quasar";
+import { GoalService } from "src/utils/firebaseUtils";
+
+const $q = useQuasar();
+const goalService = new GoalService();
+
 // 目标数据
 const halfYearGoals = ref([]);
 const endYearGoals = ref([]);
 const monthlyGoals = ref([]);
+
 const goalMap = {
   半年目标: halfYearGoals,
   年末目标: endYearGoals,
   每月目标: monthlyGoals,
 };
+
 const newGoal = ref("");
 const goalCategory = ref(null);
 const goalCategories = ["半年目标", "年末目标", "每月目标"];
-const $q = useQuasar();
 const updateDialog = ref(false);
 const updatedProgress = ref(0);
 const goalToUpdate = ref({ category: "", index: null });
 
-// **🔥 读取目标数据**
+// 读取目标数据
 const fetchGoals = async () => {
   try {
-    const docRef = doc(db, "purposes", "goals");
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      halfYearGoals.value = data["半年目标"] || [];
-      endYearGoals.value = data["年末目标"] || [];
-      monthlyGoals.value = data["每月目标"] || [];
-    }
+    const data = await goalService.getAllGoals();
+    halfYearGoals.value = data["半年目标"] || [];
+    endYearGoals.value = data["年末目标"] || [];
+    monthlyGoals.value = data["每月目标"] || [];
   } catch (error) {
     console.error("获取数据失败：", error);
   }
 };
 
-// **🔥 添加目标**
+// 添加目标
 const addGoal = async () => {
   if (!newGoal.value || !goalCategory.value) return;
   const goalObject = { title: newGoal.value, progress: 0 };
 
   try {
-    const docRef = doc(db, "purposes", "goals");
-    await updateDoc(docRef, {
-      [goalCategory.value]: arrayUnion(goalObject),
+    await goalService.addGoal(goalCategory.value, goalObject);
+    await fetchGoals(); // 重新获取数据
+    newGoal.value = "";
+    goalCategory.value = null;
+    $q.notify({
+      color: "positive",
+      message: "目标添加成功！",
     });
-    fetchGoals(); // 重新获取数据
   } catch (error) {
     console.error("添加目标失败：", error);
+    $q.notify({
+      color: "negative",
+      message: "添加目标失败，请重试",
+    });
   }
-
-  newGoal.value = "";
-  goalCategory.value = null;
 };
-// **🔥 删除目标**
+
+// 删除目标
 const deleteGoal = async (category, index) => {
   try {
     if (!goalMap[category]) {
-      console.error("删除目标失败： 无效的目标类别");
+      console.error("删除目标失败：无效的目标类别");
       return;
     }
 
-    const goalList = goalMap[category]; // 获取对应的 ref
-    const goalToRemove = goalList.value[index]; // 获取要删除的目标对象
+    const goalList = goalMap[category];
+    const goalToRemove = goalList.value[index];
 
-    const docRef = doc(db, "purposes", "goals");
-    await updateDoc(docRef, {
-      [category]: arrayRemove(goalToRemove),
-    });
-
-    // 本地同步更新
+    await goalService.deleteGoal(category, goalToRemove);
     goalList.value.splice(index, 1);
     $q.notify({
       color: "positive",
-      position: "top",
       message: "目标删除成功！",
     });
   } catch (error) {
     console.error("删除目标失败：", error);
+    $q.notify({
+      color: "negative",
+      message: "删除目标失败，请重试",
+    });
   }
 };
 
-// **🔥 更新目标进度**
+// 编辑目标
 const editGoal = (category, index, progress) => {
-
   if (!goalMap[category]) {
-    console.error("更新目标失败： 无效的目标类别");
+    console.error("更新目标失败：无效的目标类别");
     return;
   }
 
-  goalToUpdate.value = { category, index }; // 记录要更新的目标位置
-  updatedProgress.value = progress; // 预填充当前进度
-  updateDialog.value = true; // 打开对话框
+  goalToUpdate.value = { category, index };
+  updatedProgress.value = progress;
+  updateDialog.value = true;
 };
 
-// **🔥 更新目标进度**
+// 更新目标
 const updateGoal = async () => {
   try {
     const { category, index } = goalToUpdate.value;
     const goalList = goalMap[category];
     const oldGoal = goalList.value[index];
     const updatedGoal = { ...oldGoal, progress: updatedProgress.value };
-    const docRef = doc(db, "purposes", "goals");
 
-    // 🔥 先删除旧目标
-    await updateDoc(docRef, {
-      [category]: arrayRemove(oldGoal),
-    });
-
-    // 🔥 再添加新目标
-    await updateDoc(docRef, {
-      [category]: arrayUnion(updatedGoal),
-    });
-
-    // 更新 Vue 状态
+    await goalService.updateGoal(category, oldGoal, updatedGoal);
     goalList.value[index] = updatedGoal;
-    updateDialog.value = false; // 关闭对话框
+    updateDialog.value = false;
+    $q.notify({
+      color: "positive",
+      message: "目标更新成功！",
+    });
   } catch (error) {
     console.error("更新目标失败：", error);
+    $q.notify({
+      color: "negative",
+      message: "更新目标失败，请重试",
+    });
   }
 };
 

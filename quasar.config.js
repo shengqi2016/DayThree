@@ -23,8 +23,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-webpack/boot-files
     boot: [
-
-
+      // 'firebase'
     ],
 
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
@@ -70,8 +69,28 @@ module.exports = configure(function (ctx) {
       // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
 
-      chainWebpack (/* chain */) {}
+      chainWebpack (chain) {
+        chain.plugin('define')
+          .set('process.env', {
+            FIREBASE_API_KEY: JSON.stringify('AIzaSyAsA57gTRgBUoF2qvHPKC3CKmNjgIsDcw0'),
+            FIREBASE_AUTH_DOMAIN: JSON.stringify('bmi-program.firebaseapp.com'),
+            FIREBASE_PROJECT_ID: JSON.stringify('bmi-program'),
+            FIREBASE_STORAGE_BUCKET: JSON.stringify('bmi-program.firebasestorage.app'),
+            FIREBASE_MESSAGING_SENDER_ID: JSON.stringify('316951727213'),
+            FIREBASE_APP_ID: JSON.stringify('1:316951727213:web:b884d0605b6f1ac4624364'),
+            FIREBASE_MEASUREMENT_ID: JSON.stringify('G-JJF5XKLC2K')
+          })
+      },
 
+      env: {
+        FIREBASE_API_KEY: 'AIzaSyAsA57gTRgBUoF2qvHPKC3CKmNjgIsDcw0',
+        FIREBASE_AUTH_DOMAIN: 'bmi-program.firebaseapp.com',
+        FIREBASE_PROJECT_ID: 'bmi-program',
+        FIREBASE_STORAGE_BUCKET: 'bmi-program.firebasestorage.app',
+        FIREBASE_MESSAGING_SENDER_ID: '316951727213',
+        FIREBASE_APP_ID: '1:316951727213:web:b884d0605b6f1ac4624364',
+        FIREBASE_MEASUREMENT_ID: 'G-JJF5XKLC2K'
+      }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-devServer
